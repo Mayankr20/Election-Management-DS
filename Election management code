@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Structure to define a Candidate node
+struct Candidate {
+    int id;
+    char name[50];
+    char party[50];
+    int votes;
+    struct Candidate* next;
+};
+
+// Global head pointer for the Linked List
+struct Candidate* head = NULL;
+
+// Function to add a new candidate to the list
+void addCandidate(int id, char name[], char party[]) {
+    struct Candidate* newNode = (struct Candidate*)malloc(sizeof(struct Candidate));
+    newNode->id = id;
+    strcpy(newNode->name, name);
+    strcpy(newNode->party, party);
+    newNode->votes = 0;
+    newNode->next = NULL;
+
+    if (head == NULL) {
+        head = newNode;
+    } else {
+        struct Candidate* temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+    }
+    printf("Candidate %s added successfully!\n", name);
+}
+
+// Function to cast a vote (Linear Search in Linked List)
+void castVote(int id) {
+    struct Candidate* temp = head;
+    while (temp != NULL) {
+        if (temp->id == id) {
+            temp->votes++;
+            printf("Vote cast successfully for %s!\n", temp->name);
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Error: Candidate ID %d not found.\n", id);
+}
+
+// Function to display all results
+void displayResults() {
+    struct Candidate* temp = head;
+    printf("\n--- Election Results ---\n");
+    printf("ID\tName\t\tParty\t\tVotes\n");
+    while (temp != NULL) {
+        printf("%d\t%s\t\t%s\t\t%d\n", temp->id, temp->name, temp->party, temp->votes);
+        temp = temp->next;
+    }
+}
+
+// Function to find and display the winner
+void findWinner() {
+    if (head == NULL) {
+        printf("No candidates in the election.\n");
+        return;
+    }
+
+    struct Candidate* temp = head;
+    struct Candidate* winner = head;
+
+    while (temp != NULL) {
+        if (temp->votes > winner->votes) {
+            winner = temp;
+        }
+        temp = temp->next;
+    }
+
+    printf("\n============================================\n");
+    printf("WINNER: %s (%s) with %d votes!", winner->name, winner->party, winner->votes);
+    printf("\n============================================\n");
+}
+
+int main() {
+    int choice, id;
+    char name[50], party[50];
+
+    while (1) {
+        printf("\n1. Add Candidate\n2. Cast Vote\n3. Display Results\n4. Find Winner\n5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter ID, Name, and Party: ");
+                scanf("%d %s %s", &id, name, party);
+                addCandidate(id, name, party);
+                break;
+            case 2:
+                printf("Enter Candidate ID to vote: ");
+                scanf("%d", &id);
+                castVote(id);
+                break;
+            case 3:
+                displayResults();
+                break;
+            case 4:
+                findWinner();
+                break;
+            case 5:
+                exit(0);
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+    return 0;
+}
